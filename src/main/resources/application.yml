@@ -27,3 +27,12 @@ spring:
           batch_versioned_data: true
           order_inserts: true
           order_updates: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+  writer-with-default-pretty-printer: true
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
