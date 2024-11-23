@@ -7,11 +7,20 @@ import com.example.mbank.mapper.UserMapper;
 import com.example.mbank.repository.EmailDataRepository;
 import com.example.mbank.repository.PhoneDataRepository;
 import com.example.mbank.repository.UserRepository;
+import com.example.mbank.utils.UserSpecifications;
 import com.example.mbank.web.dto.UpdateUserContactRequest;
 import com.example.mbank.web.dto.UserResponse;
+import com.example.mbank.web.dto.UserSearchRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.HashSet;
@@ -112,4 +121,42 @@ public class UserService {
     }
 
 
+    @Transactional
+    public Page<UserResponse> searchPersonsWithFilters(UserSearchRequest request) {
+        Specification<User> specification = Specification.where(null);
+
+        if (StringUtils.hasText(request.getName())) {
+            specification = specification.and(UserSpecifications.hasNameLike(request.getName()));
+        }
+
+        if (request.getDateOfBirth() != null) {
+            specification = specification.and(UserSpecifications.hasDateOfBirthAfter(request.getDateOfBirth()));
+        }
+
+        if (StringUtils.hasText(request.getPhone())) {
+            specification = specification.and(UserSpecifications.hasPhone(request.getPhone()));
+        }
+
+        if (StringUtils.hasText(request.getEmail())) {
+            specification = specification.and(UserSpecifications.hasEmail(request.getEmail()));
+        }
+
+        Pageable pageable = createPageRequest(request);
+        Page<User> users = userRepository.findAll(specification, pageable);
+
+        List<UserResponse> userResponses = users.getContent().stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userResponses, pageable, users.getTotalElements());
+    }
+
+    private Pageable createPageRequest(UserSearchRequest request) {
+        Sort sort = Sort.by(Sort.Order.asc(request.getSortBy()));
+        if (request.getSortBy().startsWith("-")) {
+            String sortField = request.getSortBy().substring(1);
+            sort = Sort.by(Sort.Order.desc(sortField));
+        }
+        return PageRequest.of(request.getPage(), request.getSize(), sort);
+    }
 }
