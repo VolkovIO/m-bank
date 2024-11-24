@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -44,8 +45,8 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserContacts(UpdateUserContactRequest request) {
-        User user = userRepository.findById(request.getUserId())
+    public void updateUserContacts(UpdateUserContactRequest request, Principal principal) {
+        User user = userRepository.findByName(principal.getName())
                 .orElseThrow(() -> new EntityNotFoundException("Person not found"));
 
 
@@ -76,11 +77,14 @@ public class UserService {
             int existingPhonesCount = existingPhones.size();
             int phonesToDeleteCount = phonesToDelete.size();
 
-            if (existingPhonesCount - phonesToDeleteCount > 1) {
+            if (existingPhonesCount > phonesToDeleteCount) {
                 phoneDataRepository.deleteAll(phonesToDelete);
-            } else if (existingPhonesCount - phonesToDeleteCount == 1) {
+            } else {
                 // Оставляем последний телефон
-                phoneDataRepository.deleteAll(phonesToDelete.subList(0, phonesToDeleteCount - 1));
+                if (phonesToDeleteCount > 0) {
+                    // Удаляем все, кроме последнего
+                    phoneDataRepository.deleteAll(phonesToDelete.subList(0, phonesToDeleteCount - 1));
+                }
             }
         }
 
@@ -111,11 +115,13 @@ public class UserService {
             int existingEmailsCount = existingEmails.size();
             int emailsToDeleteCount = emailsToDelete.size();
 
-            if (existingEmailsCount - emailsToDeleteCount > 1) {
+            if (existingEmailsCount > emailsToDeleteCount) {
                 emailDataRepository.deleteAll(emailsToDelete);
-            } else if (existingEmailsCount - emailsToDeleteCount == 1) {
+            } else {
                 // Оставляем последний телефон
-                emailDataRepository.deleteAll(emailsToDelete.subList(0, emailsToDeleteCount - 1));
+                if (emailsToDeleteCount > 0) {
+                    emailDataRepository.deleteAll(emailsToDelete.subList(0, emailsToDeleteCount - 1));
+                }
             }
         }
     }

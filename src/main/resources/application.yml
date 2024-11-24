@@ -34,5 +34,9 @@ springdoc:
   api-docs:
     path: /api-docs
   writer-with-default-pretty-printer: true
-  default-produces-media-type: application/json
-  default-consumes-media-type: application/json
+#  default-produces-media-type: application/json
+#  default-consumes-media-type: application/json
+
+jwt:
+  secret: my-secret
+  lifetime: 30m

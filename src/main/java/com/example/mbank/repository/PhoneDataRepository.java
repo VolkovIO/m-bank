@@ -13,5 +13,5 @@ public interface PhoneDataRepository extends JpaRepository<PhoneData, Long> {
 
     Long countByUser(User user);
 
-    List<PhoneData> findByUser(User user); // Метод для поиска всех телефонов по пользователю
+    List<PhoneData> findByUser(User user);
 }

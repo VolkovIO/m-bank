@@ -7,6 +7,7 @@ import com.example.mbank.web.dto.UserSearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @Tag(name = "Взаимодействие с пользователями")
@@ -40,15 +42,16 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Обновление контактных данных пользователя",
+            summary = "Обновление контактных данных пользователя идентифицируемого по JWT",
             description = "Добавляет, удаляет список телефон, emails у пользователя. Последний телефон, емайл не удаляется")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",  description = "Успешно создан клиент"),
+            @ApiResponse(responseCode = "200",  description = "Успешно"),
             @ApiResponse(responseCode = "400", description = "Некорректный запрос"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")})
     @PostMapping("/updateUserContacts")
-    public ResponseEntity<Void> updateUserContacts(@RequestBody UpdateUserContactRequest request) {
-        userService.updateUserContacts(request);
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<Void> updateUserContacts(@RequestBody UpdateUserContactRequest request, Principal principal) {
+        userService.updateUserContacts(request, principal);
         return ResponseEntity.ok().build();
     }
 

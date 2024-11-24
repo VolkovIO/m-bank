@@ -6,7 +6,6 @@ import java.util.Set;
 
 @Data
 public class UpdateUserContactRequest {
-    private Long UserId;
     private Set<String> addPhones;
     private Set<String> removePhones;
     private Set<String> addEmails;
