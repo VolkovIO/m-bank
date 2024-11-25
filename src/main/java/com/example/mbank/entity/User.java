@@ -23,7 +23,6 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//@Table(name = "user")
 public class User {
 
     @Id
@@ -32,7 +31,6 @@ public class User {
 
     private String name;
 
-    //    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     private String password;

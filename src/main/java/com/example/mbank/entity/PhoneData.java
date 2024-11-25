@@ -20,7 +20,6 @@ import javax.persistence.ManyToOne;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//@Table(name = "phone_data")
 public class PhoneData {
 
     @Id

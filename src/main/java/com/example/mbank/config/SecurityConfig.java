@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .cors().disable()
                 .authorizeRequests()
                 .antMatchers("/v1/user/updateUserContacts").authenticated()
+                .antMatchers("/v1/transfer").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // отключаем сессии
